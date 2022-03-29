@@ -30,7 +30,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  MapboxMapController? mapController;
+
   LatLng currentLocation = const LatLng(40.4167, -3.70325);
+  _onMapCreated(MapboxMapController controller) {
+    mapController = controller;
+  }
 
   @override
   void initState() {
@@ -43,7 +48,13 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: Stack(
         children: [
-          // Add MapboxMap here and enable user location
+          MapboxMap(
+            styleString: MapboxStyles.OUTDOORS,
+            accessToken: dotenv.get('MAPBOX_ACCESS_TOKEN'),
+            onMapCreated: _onMapCreated,
+            initialCameraPosition:
+                CameraPosition(target: const LatLng(40.4167, -3.70325)),
+          ),
           Positioned(
             bottom: 0,
             child: SizedBox(
@@ -69,12 +80,19 @@ class _HomeState extends State<Home> {
                       const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (_) => const PrepareRide(),
-                          //   ),
-                          // )
+                          mapController
+                              ?.animateCamera(
+                                CameraUpdate.newCameraPosition(
+                                  CameraPosition(
+                                    bearing: 10.0,
+                                    target: currentLocation,
+                                    tilt: 30.0,
+                                    zoom: 17.0,
+                                  ),
+                                ),
+                              )
+                              .then((result) => print(
+                                  "mapController.animateCamera() returned $result"));
                         },
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(20)),
