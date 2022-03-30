@@ -28,6 +28,7 @@
 	<string>pk.eyJ1IjoiYW5hcG9sbyIsImEiOiJjbDE2bng4M3MwZXJjM2NwZmFybzRnc2lvIn0.EX5pK0VrtRZGzLkUgtLqsw</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
     <string>The app needs your location to use the maps</string>
+
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
