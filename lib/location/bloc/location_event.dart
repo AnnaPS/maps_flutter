@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'location_bloc.dart';
 
 class LocationEvent extends Equatable {
   @override

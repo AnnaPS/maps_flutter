@@ -1,7 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:location/location.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
-import 'package:maps_flutter/util/location_helper.dart';
+part of 'location_bloc.dart';
 
 enum LocationStateStatus { initial, success, error, loading }
 
@@ -18,14 +15,17 @@ class LocationState extends Equatable {
     LatLng? initLocation,
     LocationData? locationData,
     Location? location,
+    String? errorMessage,
   })  : locationData = locationData ?? LocationHelper.locationDataFromMap,
         location = location ?? Location(),
-        initLocation = initLocation ?? const LatLng(40.4167, -3.70325);
+        initLocation = initLocation ?? const LatLng(40.4167, -3.70325),
+        errorMessage = errorMessage ?? '';
 
   final LocationStateStatus status;
   final LocationData locationData;
   final LatLng initLocation;
   final Location location;
+  final String errorMessage;
 
   @override
   List<Object?> get props => [
@@ -33,6 +33,7 @@ class LocationState extends Equatable {
         locationData,
         location,
         initLocation,
+        errorMessage,
       ];
 
   LocationState copyWith({
@@ -40,12 +41,14 @@ class LocationState extends Equatable {
     LocationData? locationData,
     LatLng? initLocation,
     Location? location,
+    String? errorMessage,
   }) {
     return LocationState(
       status: status ?? this.status,
       locationData: locationData ?? this.locationData,
       initLocation: initLocation ?? this.initLocation,
       location: location ?? this.location,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

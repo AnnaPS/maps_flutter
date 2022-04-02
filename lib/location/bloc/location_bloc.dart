@@ -1,47 +1,52 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:location/location.dart';
-import 'package:maps_flutter/location/bloc/location_event.dart';
-import 'package:maps_flutter/location/bloc/location_state.dart';
+import 'package:location_repository/location_repository.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:maps_flutter/util/location_helper.dart';
+
+part 'location_state.dart';
+part 'location_event.dart';
 
 class LocationBloc extends Bloc<LocationEvent, LocationState> {
-  LocationBloc() : super(LocationState()) {
+  LocationBloc({
+    required this.locationRepository,
+  }) : super(LocationState()) {
     on<GetLocation>(_getLocationEvent);
   }
+  final LocationRepository locationRepository;
 
   void _getLocationEvent(GetLocation event, Emitter<LocationState> emit) async {
     try {
-      Location location = Location();
-
       emit(state.copyWith(status: LocationStateStatus.loading));
-      isServiceEnableAndHasPermission(location);
-      var _currentPosition = await location.getLocation();
-      emit(state.copyWith(
-        locationData: _currentPosition,
-        status: LocationStateStatus.success,
-        location: location,
-      ));
+      final isServiceEnable = await locationRepository.isServiceEnable();
+      final hasPermissions = await locationRepository.hasPermissions();
+
+      if (isServiceEnable && hasPermissions) {
+        var _currentLocation = await locationRepository.getUserLocation();
+
+        emit(
+          state.copyWith(
+            locationData: _currentLocation,
+            status: LocationStateStatus.success,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+              status: LocationStateStatus.error,
+              errorMessage: !isServiceEnable
+                  ? 'You don\'t have location service enabled'
+                  : 'You don\'t have all the permissions granted'),
+        );
+      }
     } catch (_) {
-      emit(state.copyWith(status: LocationStateStatus.error));
-    }
-  }
-
-  void isServiceEnableAndHasPermission(Location location) async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
+      emit(
+        state.copyWith(
+            status: LocationStateStatus.error,
+            errorMessage:
+                'Something went wrong getting the your location, please try again later.'),
+      );
     }
   }
 }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:maps_flutter/map/pages/map_page.dart';
 import 'package:maps_flutter/util/bloc_observer.dart';
-
-import 'home/home_page.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -19,11 +18,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Mapbox Flutter',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lime,
       ),
-      home: const HomePage(),
+      home: const MapPage(),
     );
   }
 }
