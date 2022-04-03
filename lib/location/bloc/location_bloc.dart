@@ -37,7 +37,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
               status: LocationStateStatus.error,
               errorMessage: !isServiceEnable
                   ? 'You don\'t have location service enabled'
-                  : 'You don\'t have all the permissions granted'),
+                  : 'You don\'t have all the permissions granted.\nYou need to activate them manually.'),
         );
       }
     } catch (_) {

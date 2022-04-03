@@ -24,7 +24,7 @@ class LocationErrorWidget extends StatelessWidget {
           errorMessage,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyText1,
-        )
+        ),
       ],
     );
   }
