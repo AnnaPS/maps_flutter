@@ -13,9 +13,10 @@ class LocationRepository {
   Future<LocationData> getUserLocation() async => _location.getLocation();
 
   Future<bool> isServiceEnable() async {
-    if (!await _location.serviceEnabled()) {
-      await _location.requestService();
-      if (!await _location.serviceEnabled()) {
+    var isServiceEnabled = await _location.serviceEnabled();
+    if (!isServiceEnabled) {
+      isServiceEnabled = await _location.requestService();
+      if (!isServiceEnabled) {
         return false;
       }
     }
@@ -23,9 +24,10 @@ class LocationRepository {
   }
 
   Future<bool> hasPermissions() async {
-    if (await _location.hasPermission() == PermissionStatus.denied) {
-      await _location.requestPermission();
-      if (await _location.hasPermission() != PermissionStatus.granted) {
+    var permissionStatus = await _location.hasPermission();
+    if (permissionStatus == PermissionStatus.denied) {
+      permissionStatus = await _location.requestPermission();
+      if (permissionStatus != PermissionStatus.granted) {
         return false;
       }
     }

@@ -49,3 +49,5 @@ app.*.map.json
 /ios/Podfile.lock
 /android/app/src/main/res/values/strings.xml
 pubspec.lock
+packages/location_repository/utils/tool/coverage.sh
+/coverage/
