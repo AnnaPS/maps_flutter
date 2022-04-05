@@ -2,15 +2,19 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:location_repository/location_repository.dart';
 import 'package:maps_flutter/location/bloc/location_bloc.dart';
-import 'package:maps_flutter/util/location_helper.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockRepository extends Mock implements LocationRepository {}
 
+class MockCurrentUserLocation extends Mock
+    implements CurrentUserLocationEntity {}
+
 void main() {
   late LocationRepository locationRepository;
+  late CurrentUserLocationEntity currentUserLocationEntity;
   setUp(() {
     locationRepository = MockRepository();
+    currentUserLocationEntity = MockCurrentUserLocation();
   });
 
   group('Location bloc', () {
@@ -31,18 +35,10 @@ void main() {
 
   blocTest<LocationBloc, LocationState>(
     'emits [LocationState.isLoading] - [LocationState.isSuccess] '
-    'when repository isServiceEnable, hasPermissions and returns the location',
+    'when location isServiceEnable and hasPermissions',
     setUp: () {
-      when(() => locationRepository.isServiceEnable()).thenAnswer(
-        (_) => Future.value(true),
-      );
-      when(() => locationRepository.hasPermissions()).thenAnswer(
-        (_) => Future.value(true),
-      );
-      when(() => locationRepository.getUserLocation()).thenAnswer(
-        (_) async => Future.value(
-          LocationHelper.locationDataFromMap,
-        ),
+      when(() => locationRepository.getCurrentLocation()).thenAnswer(
+        (_) async => currentUserLocationEntity,
       );
     },
     build: () => LocationBloc(locationRepository: locationRepository),
@@ -50,26 +46,23 @@ void main() {
     expect: () => <LocationState>[
       LocationState().copyWith(status: LocationStateStatus.loading),
       LocationState().copyWith(
-          status: LocationStateStatus.success,
-          locationData: LocationHelper.locationDataFromMap)
+        status: LocationStateStatus.success,
+        currentUserLocation: currentUserLocationEntity,
+      )
     ],
     verify: (_) {
       verify(
-        () => locationRepository.getUserLocation(),
+        () => locationRepository.getCurrentLocation(),
       ).called(1);
     },
   );
 
   blocTest<LocationBloc, LocationState>(
     'emits [LocationState.isLoading] - [LocationState.isError] '
-    'when repository isServiceEnable is FALSE, hasPermissions is TRUE',
+    'when repository throws CurrentLocationFailure because service is not enabled',
     setUp: () {
-      when(() => locationRepository.isServiceEnable()).thenAnswer(
-        (_) => Future.value(false),
-      );
-      when(() => locationRepository.hasPermissions()).thenAnswer(
-        (_) => Future.value(true),
-      );
+      when(() => locationRepository.getCurrentLocation())
+          .thenThrow(isA<CurrentLocationFailure>());
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
@@ -83,14 +76,11 @@ void main() {
 
   blocTest<LocationBloc, LocationState>(
     'emits [LocationState.isLoading] - [LocationState.isError] '
-    'when repository isServiceEnable is TRUE, hasPermissions is FALSE',
+    'when repository throws CurrentLocationFailure because'
+    ' user don\'t have permissions',
     setUp: () {
-      when(() => locationRepository.isServiceEnable()).thenAnswer(
-        (_) => Future.value(true),
-      );
-      when(() => locationRepository.hasPermissions()).thenAnswer(
-        (_) => Future.value(false),
-      );
+      when(() => locationRepository.getCurrentLocation())
+          .thenThrow(isA<CurrentLocationFailure>());
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
@@ -102,18 +92,13 @@ void main() {
               'You don\'t have all the permissions granted.\nYou need to activate them manually.')
     ],
   );
+
   blocTest<LocationBloc, LocationState>(
     'emits [LocationState.isLoading] - [LocationState.isError] '
     'when repository catch and exception',
     setUp: () {
-      when(() => locationRepository.isServiceEnable()).thenAnswer(
-        (_) => Future.value(true),
-      );
-      when(() => locationRepository.hasPermissions()).thenAnswer(
-        (_) => Future.value(true),
-      );
-      when(() => locationRepository.getUserLocation())
-          .thenThrow(isA<Exception>());
+      when(() => locationRepository.getCurrentLocation())
+          .thenThrow(isA<CurrentLocationFailure>());
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
@@ -122,12 +107,7 @@ void main() {
       LocationState().copyWith(
           status: LocationStateStatus.error,
           errorMessage:
-              'Something went wrong getting the your location, please try again later.')
+              'Something went wrong getting your location, please try again later.')
     ],
-    verify: (_) {
-      verify(
-        () => locationRepository.getUserLocation(),
-      ).called(1);
-    },
   );
 }

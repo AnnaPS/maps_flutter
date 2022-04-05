@@ -18,8 +18,7 @@ class MapLayout extends StatelessWidget {
         builder: (context, state) {
           if (state.status.isSuccess) {
             return MapSuccessWidget(
-              locationData: state.locationData,
-              initLocation: state.initLocation,
+              currentUserLocation: state.currentUserLocation,
             );
           }
           if (state.status.isError) {

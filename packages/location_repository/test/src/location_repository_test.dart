@@ -3,64 +3,100 @@ import 'package:location_repository/location_repository.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockRepository extends Mock implements LocationRepository {}
+class MockLocation extends Mock implements Location {}
 
 void main() {
   late LocationRepository locationRepository;
+  late Location location;
 
   setUp(() {
-    locationRepository = MockRepository();
+    location = MockLocation();
+    locationRepository = LocationRepository(
+      location: location,
+    );
   });
   test('can be instantiated', () {
     expect(LocationRepository(), isNotNull);
   });
 
-  group('LocationRepository methods', () {
-    test('Get User Location', () async {
-      final locationDataFromMap = LocationData.fromMap(<String, dynamic>{
-        'latitude': 40.4167,
-        'longitude': -3.70325,
+  group('getCurrentLocation', () {
+    group('getCurrentLocation', () {
+      test('throws CurrentLocationFailure when service is not enabled', () {
+        when(() => location.serviceEnabled()).thenAnswer((_) async => false);
+        when(() => location.requestService()).thenAnswer((_) async => false);
+
+        expect(
+          () => locationRepository.getCurrentLocation(),
+          throwsA(isA<CurrentLocationFailure>()),
+        );
       });
-      when(() => LocationRepository().getUserLocation()).thenAnswer(
-        (_) async => Future.value(locationDataFromMap),
-      );
-      await LocationRepository().getUserLocation();
-      verify(() => LocationRepository().getUserLocation()).called(1);
-    });
 
-    test('Service is NOT Enabled', () async {
-      const isServiceEnable = false;
-      when(() => LocationRepository().isServiceEnable())
-          .thenAnswer((_) => Future.value(isServiceEnable));
-      await Location().requestService();
-      expect(LocationRepository().isServiceEnable(), isServiceEnable);
-    });
+      test('throws PermissionsFailure when permission is not granted', () {
+        when(() => location.serviceEnabled()).thenAnswer((_) async => true);
+        when(() => location.hasPermission()).thenAnswer(
+          (_) async => PermissionStatus.denied,
+        );
+        when(() => location.requestPermission()).thenAnswer(
+          (_) async => PermissionStatus.denied,
+        );
 
-    test('Service is NOT Enabled, requestService', () async {
-      const isServiceEnabled = false;
+        expect(
+          () => locationRepository.getCurrentLocation(),
+          throwsA(isA<CurrentLocationFailure>()),
+        );
+      });
 
-      when(() => Location().requestService())
-          .thenAnswer((_) => Future.value(isServiceEnabled));
-      await Location().requestService();
+      test('throws CurrentLocationFailure when location is unavailable', () {
+        when(() => location.serviceEnabled()).thenAnswer((_) async => true);
+        when(() => location.hasPermission()).thenAnswer(
+          (_) async => PermissionStatus.granted,
+        );
+        when(() => location.getLocation()).thenThrow(Exception());
 
-      expect(Location().requestService(), isServiceEnabled);
-    });
+        expect(
+          () => locationRepository.getCurrentLocation(),
+          throwsA(isA<CurrentLocationFailure>()),
+        );
+      });
 
-    test('Has permissions', () async {
-      when(() async => Location().hasPermission())
-          .thenAnswer((_) => Future.value(PermissionStatus.denied));
-      when(() async => Location().requestPermission())
-          .thenAnswer((_) => Future.value(PermissionStatus.granted));
-      await Location().requestPermission();
-      expect(await LocationRepository().hasPermissions(), true);
+      test('throws CurrentLocationFailure when location is null', () {
+        when(() => location.serviceEnabled()).thenAnswer((_) async => true);
+        when(() => location.hasPermission()).thenAnswer(
+          (_) async => PermissionStatus.granted,
+        );
+        when(() => location.getLocation()).thenAnswer(
+          (_) async => LocationData.fromMap(<String, dynamic>{}),
+        );
 
-      // verify(() async => Location().hasPermission()).called(1);
-    });
+        expect(
+          () => locationRepository.getCurrentLocation(),
+          throwsA(isA<CurrentLocationFailure>()),
+        );
+      });
 
-    test('Not Has permissions', () async {
-      when(() => LocationRepository().hasPermissions())
-          .thenAnswer((_) => Future.value(false));
-      expect(await LocationRepository().hasPermissions(), false);
+      test('returns CurrentUserLocation when location is available', () async {
+        const latitude = 42.0;
+        const longitude = 13.37;
+        when(() => location.serviceEnabled()).thenAnswer((_) async => true);
+        when(() => location.hasPermission()).thenAnswer(
+          (_) async => PermissionStatus.granted,
+        );
+        when(() => location.getLocation()).thenAnswer(
+          (_) async => LocationData.fromMap(
+            <String, dynamic>{
+              'latitude': latitude,
+              'longitude': longitude,
+            },
+          ),
+        );
+
+        expect(
+          await locationRepository.getCurrentLocation(),
+          isA<CurrentUserLocationEntity>()
+              .having((l) => l.latitude, 'latitude', latitude)
+              .having((l) => l.longitude, 'longitude', longitude),
+        );
+      });
     });
   });
 }

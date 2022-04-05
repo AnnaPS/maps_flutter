@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:location_repository/location_repository.dart';
 
 class InfoCardWidget extends StatelessWidget {
   const InfoCardWidget({
     Key? key,
-    required this.locationData,
+    required this.currentUserLocation,
   }) : super(key: key);
-  final LocationData locationData;
+  final CurrentUserLocationEntity currentUserLocation;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -28,7 +28,7 @@ class InfoCardWidget extends StatelessWidget {
               const SizedBox(height: 20),
               const Text('You are currently here:'),
               Text(
-                'Longitude: ${locationData.longitude} - Latitude: ${locationData.latitude}',
+                'Longitude: ${currentUserLocation.longitude} - Latitude: ${currentUserLocation.latitude}',
                 style: const TextStyle(color: Colors.indigo),
               ),
               const SizedBox(height: 20),

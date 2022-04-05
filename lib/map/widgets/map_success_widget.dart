@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:location/location.dart';
+import 'package:location_repository/location_repository.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:maps_flutter/map/widgets/info_card_widget.dart';
 import 'package:maps_flutter/map/widgets/zoom_in_out_widget.dart';
@@ -8,11 +8,9 @@ import 'package:maps_flutter/map/widgets/zoom_in_out_widget.dart';
 class MapSuccessWidget extends StatefulWidget {
   const MapSuccessWidget({
     Key? key,
-    required this.locationData,
-    required this.initLocation,
+    required this.currentUserLocation,
   }) : super(key: key);
-  final LocationData locationData;
-  final LatLng initLocation;
+  final CurrentUserLocationEntity currentUserLocation;
 
   @override
   State<MapSuccessWidget> createState() => _MapSuccessWidgetState();
@@ -37,8 +35,8 @@ class _MapSuccessWidgetState extends State<MapSuccessWidget> {
           trackCameraPosition: true,
           initialCameraPosition: CameraPosition(
             target: LatLng(
-              widget.locationData.latitude ?? widget.initLocation.latitude,
-              widget.locationData.longitude ?? widget.initLocation.longitude,
+              widget.currentUserLocation.latitude,
+              widget.currentUserLocation.longitude,
             ),
             zoom: 9.0,
           ),
@@ -61,7 +59,7 @@ class _MapSuccessWidgetState extends State<MapSuccessWidget> {
         Positioned(
           bottom: 0,
           child: InfoCardWidget(
-            locationData: widget.locationData,
+            currentUserLocation: widget.currentUserLocation,
           ),
         ),
         Positioned(
