@@ -34,6 +34,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
           errorMessage: e.error,
         ),
       );
+      addError(e);
     }
   }
 }

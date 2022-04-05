@@ -61,16 +61,25 @@ void main() {
     'emits [LocationState.isLoading] - [LocationState.isError] '
     'when repository throws CurrentLocationFailure because service is not enabled',
     setUp: () {
-      when(() => locationRepository.getCurrentLocation())
-          .thenThrow(isA<CurrentLocationFailure>());
+      when(() => locationRepository.getCurrentLocation()).thenThrow(
+        CurrentLocationFailure(
+          error: 'You don\'t have location service enabled',
+        ),
+      );
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
-    expect: () => <LocationState>[
+    errors: () => [
+      isA<CurrentLocationFailure>(),
+    ],
+    expect: () => [
       LocationState().copyWith(status: LocationStateStatus.loading),
-      LocationState().copyWith(
-          status: LocationStateStatus.error,
-          errorMessage: 'You don\'t have location service enabled')
+      isA<LocationState>()
+        ..having(
+          (element) => element.status,
+          'error',
+          equals(LocationStateStatus.error),
+        ),
     ],
   );
 
@@ -79,11 +88,18 @@ void main() {
     'when repository throws CurrentLocationFailure because'
     ' user don\'t have permissions',
     setUp: () {
-      when(() => locationRepository.getCurrentLocation())
-          .thenThrow(isA<CurrentLocationFailure>());
+      when(() => locationRepository.getCurrentLocation()).thenThrow(
+        CurrentLocationFailure(
+          error:
+              'You don\'t have all the permissions granted.\nYou need to activate them manually.',
+        ),
+      );
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
+    errors: () => [
+      isA<CurrentLocationFailure>(),
+    ],
     expect: () => <LocationState>[
       LocationState().copyWith(status: LocationStateStatus.loading),
       LocationState().copyWith(
@@ -97,11 +113,18 @@ void main() {
     'emits [LocationState.isLoading] - [LocationState.isError] '
     'when repository catch and exception',
     setUp: () {
-      when(() => locationRepository.getCurrentLocation())
-          .thenThrow(isA<CurrentLocationFailure>());
+      when(() => locationRepository.getCurrentLocation()).thenThrow(
+        CurrentLocationFailure(
+          error:
+              'Something went wrong getting your location, please try again later.',
+        ),
+      );
     },
     build: () => LocationBloc(locationRepository: locationRepository),
     act: (bloc) => bloc.add(GetLocation()),
+    errors: () => [
+      isA<CurrentLocationFailure>(),
+    ],
     expect: () => <LocationState>[
       LocationState().copyWith(status: LocationStateStatus.loading),
       LocationState().copyWith(
