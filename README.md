@@ -1,6 +1,6 @@
 # Mapobox in Flutter
 
-This is a simple app to show a Mapbox map and be able to do "zoom in", "zoom-out", "move when clicking", and create custom maps thanks to Mapbox Studio.
+This is a simple app to show a Mapbox map and be able to do *"zoom in"*, *"zoom-out"*, *"move when clicking"*, and create custom maps thanks to Mapbox Studio.
 
 In this example, we are going to use:
 - [Mapbox](https://www.mapbox.com/)
@@ -22,14 +22,14 @@ Please, after you clone this project, go to the article and configure the native
 
 ### .env file
 
-For this project I used .env directory to store my PUBLIC ACCESS TOKEN, if you want to use it, you need to create this structure on the root of your app:
+For this project I used .env directory to store my **PUBLIC ACCESS TOKEN**, if you want to use it, you need to create this structure on the root of your app:
 
 ````
 assets:
   - .env
 ````
 
-Inside this file you need to put your PUBLIC ACCESS TOKEN like that:
+Inside this file you need to put your **PUBLIC ACCESS TOKEN** like that:
 
 ````
 MAPBOX_ACCESS_TOKEN = 'your public access token here';
@@ -37,7 +37,7 @@ MAPBOX_ACCESS_TOKEN = 'your public access token here';
 
 For more info, you can check the official documentation of [flutter_dotenv](https://pub.dev/packages/flutter_dotenv) library.
 
-### Test
+## Test
 
 Install ```lcov``` to visualize the test:
 
@@ -46,18 +46,20 @@ Install ```lcov``` to visualize the test:
 Then you can run test on:
 
 - Test folder on your root project:
-    ```flutter test —coverage
+    ```
+       flutter test —coverage
        genhtml -o coverage coverage/lcov.info
        open coverage/index.html```
   
-- Test folder on your *location_repository package* (use commands from Very Good CLI):
+- Test folder on your **location_repository package** (use commands from Very Good CLI):
 
-   ```very_good test --coverage --min-coverage 100
+   ```
+   very_good test --coverage --min-coverage 100
    genhtml -o coverage coverage/lcov.info
    open coverage/index.html```
   
 
-## Future features 
+## Future features
 
 Things that I would like to add:
 - Custom markers.
@@ -65,6 +67,6 @@ Things that I would like to add:
 - Search by city or country.
 - Animations.
 --------
-If you want to contribute to this code open a *PR* or an *Issue*.
+If you want to contribute to this code open a **PR** or an **Issue**.
 
 Hope you enjoy it 😊
