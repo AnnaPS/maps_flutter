@@ -16,13 +16,13 @@ In this example, we are going to use:
 I created an article on Medium to teach you how to implement Mapbox.
 There are a few important native configurations that you are going to need to use Mapbox.
 
-- [Article on Medium]()
-
 Please, after you clone this project, go to the article and configure the native part.
+
+- [Article on Medium](https://ana-polo.medium.com/mapbox-flutter-bloc-location-package-ee7130a2ac1a)
 
 ### .env file
 
-For this project I used .env directory to store my **PUBLIC ACCESS TOKEN**, if you want to use it, you need to create this structure on the root of your app:
+For this project I used .env directory to store my **PUBLIC ACCESS TOKEN**, if you want to use it, you need to create this structure at the root of your app:
 
 ````
 assets:
@@ -49,19 +49,22 @@ Then you can run test on:
     ```
        flutter test —coverage
        genhtml -o coverage coverage/lcov.info
-       open coverage/index.html```
+       open coverage/index.html
+  ```
   
 - Test folder on your **location_repository package** (use commands from Very Good CLI):
 
    ```
    very_good test --coverage --min-coverage 100
    genhtml -o coverage coverage/lcov.info
-   open coverage/index.html```
+   open coverage/index.html
+  ```
   
 
 ## Future features
 
 Things that I would like to add:
+- Change styles.
 - Custom markers.
 - Update the current location.
 - Search by city or country.
