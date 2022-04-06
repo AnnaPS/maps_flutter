@@ -34,6 +34,8 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
           errorMessage: e.error,
         ),
       );
+      // This is important to check errors on tests.
+      // Also you can see the error on the [BlocObserver.onError].
       addError(e);
     }
   }

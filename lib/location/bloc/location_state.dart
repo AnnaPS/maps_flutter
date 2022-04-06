@@ -10,7 +10,7 @@ extension LocationStateStatusX on LocationStateStatus {
 }
 
 class LocationState extends Equatable {
-  LocationState({
+  const LocationState({
     this.status = LocationStateStatus.initial,
     LatLng? initLocation,
     CurrentUserLocationEntity? currentUserLocation,
